@@ -18,8 +18,12 @@ const deleteCard = (req, res) => {
         res.status(200).send({ data: card });
       }
     })
-    .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка' });
+    .catch((err) => {
+      if (err.name === 'ValidationError' || (err.name === 'CastError')) {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
     });
 };
 
