@@ -19,10 +19,26 @@ const getUserById = (req, res) => {
       if (err.message === 'NotValidId') {
         res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(400).send({ message: 'Переданы некорректные данные' });
       }
     });
 };
+
+// const getUserById = (req, res) => {
+//   const { id } = req.params;
+//   User.findById(id)
+//     .orFail(new Error('NotValidId'))
+//     .then((user) => {
+//       res.status(200).send(user);
+//     })
+//     .catch((err) => {
+//       if (err.message === 'NotValidId') {
+//         res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+//       } else {
+//         res.status(500).send({ message: 'Произошла ошибка' });
+//       }
+//     });
+// };
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
