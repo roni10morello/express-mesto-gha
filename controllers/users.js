@@ -1,11 +1,18 @@
 const User = require('../models/user');
+const {
+  OK,
+  CREATED,
+  BAD_REQUEST,
+  NOT_FOUND,
+  INTERNAL_SERVER_ERROR,
+} = require('../utils/error');
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => {
-      res.status(200).send(users);
+      res.status(OK).send(users);
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 
 const getUserById = (req, res) => {
@@ -13,47 +20,31 @@ const getUserById = (req, res) => {
   User.findById(id)
     .orFail(new Error('NotValidId'))
     .then((user) => {
-      res.status(200).send(user);
+      res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.message === 'NotValidId') {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
       } else {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       }
     });
 };
-
-// const getUserById = (req, res) => {
-//   const { id } = req.params;
-//   User.findById(id)
-//     .orFail(new Error('NotValidId'))
-//     .then((user) => {
-//       res.status(200).send(user);
-//     })
-//     .catch((err) => {
-//       if (err.message === 'NotValidId') {
-//         res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
-//       } else {
-//         res.status(500).send({ message: 'Произошла ошибка' });
-//       }
-//     });
-// };
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
     .then((newUser) => {
-      res.status(201).send(newUser);
+      res.status(CREATED).send(newUser);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({
+        res.status(BAD_REQUEST).send({
           message: 'Переданы некорректные данные',
         });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -70,16 +61,16 @@ const updateUserInfo = (req, res) => {
   )
     .then((user) => {
       if (user) {
-        res.status(200).send(user);
+        res.status(OK).send(user);
       } else {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -96,16 +87,16 @@ const updateUserAvatar = (req, res) => {
   )
     .then((user) => {
       if (user) {
-        res.status(200).send(user);
+        res.status(OK).send(user);
       } else {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
