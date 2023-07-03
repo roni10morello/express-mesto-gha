@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const routes = require('./routes/index');
+const { errors } = require('celebrate');
+const errorHandler = require('./middlewares/errorHandler');
 
 const { PORT = 3000 } = process.env;
 
@@ -15,15 +17,10 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
     console.log(`Connection is fail ${err}`);
   });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '648f447d4ecee5fa67766917',
-  };
-
-  next();
-});
-
 app.use(bodyParser.json());
-app.use(routes);
+app.use(express.urlencoded({ extended: true }));
+app.use('/', routes);
+app.use(errors());
+app.use(errorHandler);
 
 app.listen(PORT);
