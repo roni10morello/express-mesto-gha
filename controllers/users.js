@@ -14,19 +14,19 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-         const token = jwt.sign({ _id: user._id }, 'SECRET', { expiresIn: '7d' });
-         res.cookie('jwt', jwt, {
-          maxAge: 360000,
-          httpOnly: true,
-          sameSite: true,
-        });
-        res.send(user);
-      })
-      .catch(next);
-    };
+      const token = jwt.sign({ _id: user._id }, 'SECRET', { expiresIn: '7d' });
+      res.cookie('jwt', token, {
+        maxAge: 360000,
+        httpOnly: true,
+        sameSite: true,
+      });
+      res.send(user);
+    })
+    .catch(next);
+};
 
 const getUserInfo = (req, res, next) => {
-  User.findById( req.user._id )
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
         next(new NotFoundError('Запрашиваемый пользователь не найден'));
