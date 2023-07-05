@@ -14,16 +14,23 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'where-is-the-detonator', { expiresIn: '7d' });
-      res.send({ token });
-    })
-    .catch(next);
-};
+         const token = jwt.sign({ _id: user._id }, 'SECRET', { expiresIn: '7d' });
+         res.cookie('jwt', jwt, {
+          maxAge: 360000,
+          httpOnly: true,
+          sameSite: true,
+        });
+        res.send(user);
+      })
+      .catch(next);
+    };
 
 const getUserInfo = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
+  User.findById( req.user._id )
     .then((user) => {
+      if (!user) {
+        next(new NotFoundError('Запрашиваемый пользователь не найден'));
+      }
       res.status(OK).send(user);
     })
     .catch(next);
@@ -37,9 +44,10 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 
+
 const getUserById = (req, res, next) => {
-  const { id } = req.params;
-  User.findById(id)
+  const { _id } = req.params;
+  User.findById(_id)
     .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((user) => {
       res.status(OK).send(user);
@@ -67,14 +75,13 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((newUser) => {
-      const { _id } = newUser;
+    .then((user) => {
       res.status(CREATED).send({
-        _id,
-        name,
-        about,
-        avatar,
-        email,
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
       });
     })
     .catch((err) => {

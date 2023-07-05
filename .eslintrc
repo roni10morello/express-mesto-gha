@@ -1,6 +1,6 @@
 {
   "extends": "airbnb-base",
-  "plugins": ["require"],
+ "plugins": ["require"],
   "rules": {
     "no-console": "off",
     "no-underscore-dangle":  ["error", { "allow": ["_id"] }]
