@@ -17,29 +17,49 @@ const getCards = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  const userId = req.user._id;
-  Card.findById(req.params.cardId)
+  return Card.findById(cardId)
+    .orFail(() => {
+      throw new NotFoundError('Карточка не найдена');
+    })
     .then((card) => {
-      if (!card) {
-        next(new NotFoundError('Карточка не найдена'));
-      }
-      if (card.owner.toString() !== userId) {
+      if (card.owner.toString() === req.user._id) {
+        Card.findByIdAndRemove(cardId).then(() => res.status(OK).send(card));
+      } else {
         next(new ForbiddenError('Нет прав доступа для удаления карточки'));
       }
-    });
-  Card.findByIdAndRemove(cardId)
-    .then((card) => {
-      res.status(OK).send({ data: card });
     })
     .catch(next);
 };
+
+// const deleteCard = (req, res, next) => {
+//   const { cardId } = req.params;
+//   //const userId = req.user._id;
+//   Card.findById(cardId)
+//     .then((card) => {
+//       if (!card) {
+//         next(new NotFoundError('Карточка не найдена'));
+//       }
+//       if (card.owner.toString() !== req.user._id) {
+//         next(new ForbiddenError('Нет прав доступа для удаления карточки'));
+//       }
+//     });
+//   Card.findByIdAndRemove(cardId)
+//     .then((card) => {
+//       res.status(OK).send(card);
+//     })
+//     .catch((err) => {
+//       if (err.name === 'ValidationError' || err.name === 'CastError') {
+//         next(new BadRequestError('Переданы некорректные данные'));
+//       } else next(err);
+//     });
+// };
 
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((newCard) => {
-      res.status(CREATED).send({ data: newCard });
+      res.status(CREATED).send(newCard);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
