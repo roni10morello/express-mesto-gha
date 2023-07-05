@@ -37,10 +37,39 @@ const validateChangeAvatar = celebrate({
   }),
 });
 
+const validateDeleteCard = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().length(24).required().hex(),
+  }),
+});
+
+const validateCreateCArd = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    link: Joi.string().required().regex(URL_PATTERN),
+  }),
+});
+
+const validateLikeCard = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().length(24).required().hex(),
+  }),
+});
+
+const validateDisLikeCard = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().length(24).required().hex(),
+  }),
+});
+
 module.exports = {
   validateSignIn,
   validateSignUp,
   validateUserId,
   validateChangeUser,
   validateChangeAvatar,
+  validateDeleteCard,
+  validateCreateCArd,
+  validateLikeCard,
+  validateDisLikeCard,
 };

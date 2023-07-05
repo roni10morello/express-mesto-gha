@@ -6,7 +6,7 @@ const auth = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, 'SECRET');
+    payload = jwt.verify(token, 'where-is-the-detonator');
   } catch (err) {
     return next(new UnauthorizedError('Необходима авторизация'));
   }
@@ -35,5 +35,3 @@ module.exports = auth;
 
 //   return next();
 // };
-
-
