@@ -22,10 +22,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cookieParser());
 app.post('/signin', validateSignIn, login);
 app.post('/signup', validateSignUp, createUser);
-app.use(cookieParser());
 
 app.use('/', routes);
 app.use(errors());
